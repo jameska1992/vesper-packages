@@ -1,0 +1,11 @@
+# Trust the VesperOS key in pacman's keyring (once pacman-key has one; a
+# new system's pacman-init does --populate, which includes this keyring).
+post_upgrade() {
+  if [ -d /etc/pacman.d/gnupg ] && [ -f /etc/pacman.d/gnupg/pubring.gpg -o -f /etc/pacman.d/gnupg/pubring.kbx ]; then
+    pacman-key --populate vesper
+  fi
+}
+
+post_install() {
+  post_upgrade
+}

@@ -1,0 +1,69 @@
+# Builds the vesper pacman repository (build.sh) in a clean Arch container,
+# signs it, and publishes it as the files of the "repo" release, which
+# pacman downloads from:
+#
+#   [vesper]
+#   Server = https://github.com/jameska1992/vesper-packages/releases/download/repo
+#
+# Secrets: VESPER_SIGNING_KEY (the armored private signing key, required),
+# VESPER_SOURCES_TOKEN (a read-only token for VesperOS's private
+# repositories; without it only the keyring and the AUR packages are built).
+name: Build the vesper repository
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths: [aur.list, own.list, build.sh, keyring/**, .github/workflows/build.yml]
+  schedule:
+    # Weekly, so the packages are rebuilt against Arch's updates.
+    - cron: "0 4 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repo
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    steps:
+      - name: Prepare the container
+        run: |
+          pacman -Syu --noconfirm --needed git sudo github-cli
+          useradd -m builder
+          echo 'builder ALL=(ALL) NOPASSWD: /usr/bin/pacman' > /etc/sudoers.d/builder
+
+      - uses: actions/checkout@v4
+
+      - name: Import the signing key
+        env:
+          SIGNING_KEY: ${{ secrets.VESPER_SIGNING_KEY }}
+        run: |
+          test -n "$SIGNING_KEY" || { echo "The VESPER_SIGNING_KEY secret is missing"; exit 1; }
+          printf '%s\n' "$SIGNING_KEY" | sudo -u builder gpg --batch --import
+
+      - name: Build
+        env:
+          VESPER_SOURCES_TOKEN: ${{ secrets.VESPER_SOURCES_TOKEN }}
+        run: |
+          chown -R builder "$GITHUB_WORKSPACE"
+          sudo -u builder --preserve-env=VESPER_SOURCES_TOKEN ./build.sh out
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release view repo >/dev/null 2>&1 ||
+            gh release create repo --title "VesperOS package repository" \
+              --notes "pacman: Server = https://github.com/${GH_REPO}/releases/download/repo"
+          # New files over the old ones first, then drop what's no longer in
+          # the repository, so it's never half there.
+          gh release upload repo out/* --clobber
+          for asset in $(gh release view repo --json assets -q '.assets[].name'); do
+            [ -e "out/$asset" ] || gh release delete-asset repo "$asset" --yes
+          done

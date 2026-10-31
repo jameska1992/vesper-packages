@@ -1,0 +1,17 @@
+# The key VesperOS signs its packages with, for pacman: installed as a
+# pacman keyring (like archlinux-keyring), so `[vesper]` with SigLevel =
+# Required works.
+pkgname=vesper-keyring
+pkgver=20261031
+pkgrel=1
+pkgdesc="VesperOS package signing key, for pacman"
+arch=(any)
+url="https://github.com/jameska1992/vesper-packages"
+license=('unknown')
+install=vesper-keyring.install
+source=(vesper.gpg vesper-trusted vesper-revoked)
+sha256sums=(SKIP SKIP SKIP)
+
+package() {
+  install -Dm644 -t "$pkgdir/usr/share/pacman/keyrings" vesper.gpg vesper-trusted vesper-revoked
+}

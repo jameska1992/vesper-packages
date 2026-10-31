@@ -1,0 +1,13 @@
+# VesperOS's own packages (PKGBUILDs in the vesperos repository), in build
+# order. Built only when the sources can be fetched: the repositories are
+# private, so the build needs VESPER_SOURCES_TOKEN (a read-only token).
+vesper-compo
+vesper-menus
+vesper-settings
+vesper-player
+vesper-filebrowser
+vesper-web-browser
+vesper-keyboard
+vesper-store
+vesperos-splash
+vesper-session

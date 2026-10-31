@@ -1,0 +1,13 @@
+# AUR packages in the vesper repository, in build order (dependencies
+# first): NAME COMMIT. Each is pinned to the AUR commit that was reviewed;
+# a new version only goes in after reading its PKGBUILD and moving the pin.
+
+# Needed by emulationstation-de; dropped from Arch's repositories (it was
+# Arch's own package), kept as it was. Reviewed 2026-10-31: sources from
+# SourceForge with checksums, Fedora's unbundling patch and two libraw fixes.
+freeimage 66732f09db170483348f14f3d02815181c4d04d0
+
+# ES-DE, the gamepad front end for emulators, packaged by its developer.
+# Reviewed 2026-10-31 (3.5.0-1): the release from ES-DE's GitLab with a
+# checksum, a plain CMake build, no install script.
+emulationstation-de 49541b7e279060da1868de81a97135a51ef89aaf
