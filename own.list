@@ -10,4 +10,6 @@ vesper-web-browser
 vesper-keyboard
 vesper-store
 vesperos-splash
+# River (river-tv): built from the public River repository.
+river-tv
 vesper-session
