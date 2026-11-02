@@ -23,7 +23,7 @@ date.
   any install script and patches) and moving the pin. Now: ES-DE
   (`emulationstation-de`) and `freeimage`, which it needs.
 - VesperOS's packages (`own.list`, PKGBUILDs in the vesperos repository,
-  River's app and dopeIPTV included),
+  River's app included),
   when the build has a token for their private repositories.
 
 ## How it's built
