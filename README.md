@@ -40,6 +40,13 @@ started by hand, and weekly (rebuilding against Arch's updates), then
 publishes `out/` as the files of the `repo` release: new files over old
 first, then old ones removed, so the repository is never half there.
 
+The release also has the App Store's recommended list,
+`recommended.json`, copied from vesper-store (a private repository) by
+`.github/workflows/list.yml` every hour and when started by hand, so the
+store can fetch it at start; the package build leaves it in place. A new
+recommendation reaches the store within the hour, or straight away with
+`gh workflow run list.yml`.
+
 Releases hold files, so the database links are real copies, and package
 files with a `:` (an epoch) can't be published (GitHub renames them); the
 build stops if one turns up.
@@ -50,7 +57,7 @@ build stops if one turns up.
   (`gpg --armor --export-secret-keys F740EB85DB99F91239E815733ADC77FF3251C907`).
 - `VESPER_SOURCES_TOKEN` (optional): a fine-grained GitHub token with
   read-only access to VesperOS's repositories (contents), for its own
-  packages.
+  packages and the App Store's recommended list (required for that).
 
 ## The key
 

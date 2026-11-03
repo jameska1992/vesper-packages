@@ -1,0 +1,50 @@
+# Publishes vesper-store's recommended list (recommended.json, from the
+# private vesper-store repository) as a file of the "repo" release, where
+# the App Store fetches it at start:
+#
+#   https://github.com/jameska1992/vesper-packages/releases/download/repo/recommended.json
+#
+# Hourly and when started by hand, so recommending an app needs neither a
+# package build nor an OS update. Secret: VESPER_SOURCES_TOKEN (read-only,
+# VesperOS's repositories).
+name: Publish the recommended list
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: list
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch the list
+        env:
+          GH_TOKEN: ${{ secrets.VESPER_SOURCES_TOKEN }}
+        run: |
+          test -n "$GH_TOKEN" || { echo "The VESPER_SOURCES_TOKEN secret is missing"; exit 1; }
+          gh api -H "Accept: application/vnd.github.raw" \
+            repos/jameska1992/vesper-store/contents/recommended.json > recommended.json
+          # Only a list the store would take (it wants an "apps" array).
+          jq -e '.apps | type == "array"' recommended.json >/dev/null
+          jq -r '"updated \(.updated), \(.apps | length) apps"' recommended.json
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          # Unchanged lists aren't uploaded again.
+          if gh release download repo -p recommended.json -O published.json 2>/dev/null &&
+             cmp -s recommended.json published.json; then
+            echo "Already published"
+          else
+            gh release upload repo recommended.json --clobber
+          fi

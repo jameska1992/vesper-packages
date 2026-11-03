@@ -62,8 +62,10 @@ jobs:
             gh release create repo --title "VesperOS package repository" \
               --notes "pacman: Server = https://github.com/${GH_REPO}/releases/download/repo"
           # New files over the old ones first, then drop what's no longer in
-          # the repository, so it's never half there.
+          # the repository, so it's never half there. The App Store's
+          # recommended list (list.yml) stays.
           gh release upload repo out/* --clobber
           for asset in $(gh release view repo --json assets -q '.assets[].name'); do
+            [ "$asset" = recommended.json ] && continue
             [ -e "out/$asset" ] || gh release delete-asset repo "$asset" --yes
           done
