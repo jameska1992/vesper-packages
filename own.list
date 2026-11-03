@@ -12,4 +12,6 @@ vesper-store
 vesperos-splash
 # River (river-tv): built from the public River repository.
 river-tv
+# BBC iPlayer (the BBC's TV app in Chromium).
+vesper-iplayer
 vesper-session
