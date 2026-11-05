@@ -14,4 +14,6 @@ vesperos-splash
 river-tv
 # BBC iPlayer (the BBC's TV app in Chromium).
 vesper-iplayer
+# Channel 4 (its TV app in Chromium; Widevine comes from Google on the TV).
+vesper-channel4
 vesper-session
