@@ -19,4 +19,6 @@ vesper-channel4
 # Live TV (M3U playlists and Xtream logins; after vesper-player, whose
 # shared player it is built with).
 vesper-livetv
+# Crunchyroll (crunchyroll-linux, an unofficial TV app, from its pinned release).
+vesper-crunchyroll
 vesper-session
